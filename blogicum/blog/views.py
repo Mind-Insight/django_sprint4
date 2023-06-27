@@ -1,12 +1,7 @@
 import pytz
 from datetime import datetime
 
-from django.shortcuts import (
-    render,
-    get_object_or_404,
-    redirect,
-    get_list_or_404,
-)
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
@@ -20,7 +15,6 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 
 from .models import Category, Post, Comment
@@ -109,25 +103,6 @@ class PostDetailView(LoginRequiredMixin, DetailView):
         context["form"] = CommentForm()
         context["comments"] = self.object.comments.select_related("author")
         return context
-
-
-# class ProfileListView(LoginRequiredMixin, ListView):
-#     model = Post
-#     template_name = "blog/profile.html"
-#     paginate_by = 10
-
-#     def get_object(self, queryset=None):
-#         return get_object_or_404(User, username=self.kwargs.get("username"))
-
-#     def get_queryset(self):
-#         return get_list_or_404(self.object.posts.order_by('-pub_date'))
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context["profile"] = User.objects.get(
-#             username=self.kwargs.get("username")
-#         )
-#         return context
 
 
 def user_profile(request, username):
