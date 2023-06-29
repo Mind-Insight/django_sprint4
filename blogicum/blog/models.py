@@ -120,6 +120,7 @@ class Comment(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name="Автор комментария",
+        related_name="comments",
     )
     post = models.ForeignKey(
         Post,
@@ -133,3 +134,6 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ("created_at",)
+
+    def __str__(self):
+        return self.text

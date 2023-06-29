@@ -25,6 +25,9 @@ User = get_user_model()
 NOW = pytz.utc.localize(datetime.now())
 
 
+POSTS_PER_PAGE: int = 10
+
+
 class PostDispatchMixin:
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(
@@ -40,7 +43,7 @@ class PostListView(ListView):
     model = Post
     template_name = "blog/index.html"
     context_object_name = "posts"
-    paginate_by = 10
+    paginate_by = POSTS_PER_PAGE
 
     def get_queryset(self):
         queryset = (
@@ -110,7 +113,7 @@ def user_profile(request, username):
     posts = profile.posts.annotate(comment_count=Count("comments")).order_by(
         "-pub_date"
     )
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(posts, POSTS_PER_PAGE)
     page_obj = paginator.get_page(request.GET.get("page"))
     context = {
         "page_obj": page_obj,
@@ -199,7 +202,7 @@ def category_posts(request, category_slug):
         is_published=True,
         pub_date__lte=NOW,
     ).order_by("-pub_date")
-    paginator = Paginator(post_list, 10)
+    paginator = Paginator(post_list, POSTS_PER_PAGE)
     page_obj = paginator.get_page(request.GET.get("page"))
     context = {
         "category": category,

@@ -6,6 +6,7 @@ from .models import Post, Category, Location
 admin.site.empty_value_display = "Не задано"
 
 
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "title",
@@ -17,6 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ("title",)
 
 
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = (
         "title",
@@ -36,6 +38,4 @@ class PostAdmin(admin.ModelAdmin):
     list_display_links = ("title",)
 
 
-admin.site.register(Post, PostAdmin)
-admin.site.register(Category, CategoryAdmin)
 admin.site.register(Location)
