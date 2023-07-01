@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import truncatechars
 
-from .abstracts import TimeStampedModel
+from blog.abstracts import TimeStampedModel
 
 
 User = get_user_model()

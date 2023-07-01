@@ -17,26 +17,14 @@ from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 
-from .models import Category, Post, Comment
-from .forms import PostForm, CommentForm
+from blog.models import Category, Post, Comment
+from blog.forms import PostForm, CommentForm
+from blog.mixins import PostDispatchMixin
+from blog.constants import POSTS_PER_PAGE
 
 
 User = get_user_model()
 NOW = pytz.utc.localize(datetime.now())
-
-
-POSTS_PER_PAGE: int = 10
-
-
-class PostDispatchMixin:
-    def dispatch(self, request, *args, **kwargs):
-        instance = get_object_or_404(
-            Post,
-            pk=kwargs.get("post_id"),
-        )
-        if instance.author != request.user:
-            return redirect("blog:post_detail", self.kwargs.get("post_id"))
-        return super().dispatch(request, *args, **kwargs)
 
 
 class PostListView(ListView):
@@ -99,6 +87,15 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         post = get_object_or_404(Post, pk=self.kwargs.get("post_id"))
+        if post.author != self.request.user:
+            if any(
+                [
+                    post.pub_date > NOW,
+                    not post.is_published,
+                    not post.category.is_published,
+                ]
+            ):
+                raise Http404
         return post
 
     def get_context_data(self, **kwargs):
